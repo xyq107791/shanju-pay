@@ -1,0 +1,49 @@
+server:
+  port: 56040
+
+nacos:
+  server:
+    addr: 127.0.0.1:8848
+
+spring:
+  application:
+    name: merchant-service
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${nacos.server.addr}
+        namespace: 737e79d5-5c07-4b19-bc4a-bb057e7c5fa9
+        cluster-name: DEFAULT
+      config:
+        server-addr: ${nacos.server.addr}
+        file-extension: yaml
+        namespace: 737e79d5-5c07-4b19-bc4a-bb057e7c5fa9
+        group: SHANJUPAY_GROUP
+        ext-config:
+          -
+            refresh: true
+            data-id: spring-boot-http.yaml # spring boot http配置
+            group: COMMON_GROUP # 通用配置组
+
+dubbo:
+  scan:
+    # dubbo 服务扫描基准包
+    base-packages: com.shanjupay
+  protocol:
+  # dubbo 协议
+    name: dubbo
+    port: 20891
+  registry:
+    address: nacos://127.0.0.1:8848
+  application:
+    qos:
+      port: 22310 # dubbo qos端口配置  命令行注入
+  consumer:
+    check: false
+    timeout: 90000
+    retries: -1
+
+logging:
+  config: classpath:log4j2.xml
