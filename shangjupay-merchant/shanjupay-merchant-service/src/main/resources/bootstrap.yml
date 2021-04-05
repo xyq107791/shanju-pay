@@ -1,5 +1,5 @@
 server:
-  port: 56040
+  port: 56040 #启动端口 命令行注入
 
 nacos:
   server:
@@ -9,7 +9,7 @@ spring:
   application:
     name: merchant-service
   main:
-    allow-bean-definition-overriding: true
+    allow-bean-definition-overriding: true # Spring Boot 2.1 需要设定
   cloud:
     nacos:
       discovery:
@@ -17,14 +17,20 @@ spring:
         namespace: 737e79d5-5c07-4b19-bc4a-bb057e7c5fa9
         cluster-name: DEFAULT
       config:
-        server-addr: ${nacos.server.addr}
+        server-addr: ${nacos.server.addr} # 配置中心地址
         file-extension: yaml
-        namespace: 737e79d5-5c07-4b19-bc4a-bb057e7c5fa9
-        group: SHANJUPAY_GROUP
+        namespace: 737e79d5-5c07-4b19-bc4a-bb057e7c5fa9 # 命令行注入
+        group: SHANJUPAY_GROUP # 聚合支付业务组
         ext-config:
           -
             refresh: true
             data-id: spring-boot-http.yaml # spring boot http配置
+            group: COMMON_GROUP # 通用配置组
+          - refresh: true
+            data-id: spring-boot-starter-druid.yaml # spring boot starter druid配置
+            group: COMMON_GROUP # 通用配置组
+          - refresh: true
+            data-id: spring-boot-mybatis-plus.yaml # spring boot mybatisplus配置
             group: COMMON_GROUP # 通用配置组
 
 dubbo:
@@ -32,14 +38,14 @@ dubbo:
     # dubbo 服务扫描基准包
     base-packages: com.shanjupay
   protocol:
-  # dubbo 协议
+    # dubbo 协议
     name: dubbo
-    port: 20891
+    port: 20890
   registry:
     address: nacos://127.0.0.1:8848
   application:
     qos:
-      port: 22310 # dubbo qos端口配置  命令行注入
+      port: 22240 # dubbo qos端口配置  命令行注入
   consumer:
     check: false
     timeout: 90000
