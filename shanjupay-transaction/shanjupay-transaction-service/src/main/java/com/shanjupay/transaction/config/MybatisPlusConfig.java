@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * Mybatis-Plus 配置
  * </p>
  *
- * @author
+ * @author weiqiuke
  * @since 2019-07-15
  */
 @Configuration
