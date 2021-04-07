@@ -1,7 +1,9 @@
 package com.shanjupay.merchant.controller;
 
+import com.shanjupay.merchant.common.util.SecurityUtil;
 import com.shanjupay.transaction.api.PayChannelService;
 import com.shanjupay.transaction.api.dto.PayChannelDTO;
+import com.shanjupay.transaction.api.dto.PayChannelParamDTO;
 import com.shanjupay.transaction.api.dto.PlatformChannelDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -9,9 +11,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,6 +26,19 @@ public class PlatformParamController {
 
     @Reference
     private PayChannelService payChannelService;
+
+    @ApiOperation("商户配置支付渠道参数")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "payChannelParam", value = "商户配置支付渠道参数", required =
+                    true, dataType = "PayChannelParamDTO", paramType = "body")
+    })
+    @RequestMapping(value = "/my/pay‐channel‐params",method =
+            {RequestMethod.POST,RequestMethod.PUT})
+    public void createPayChannelParam(@RequestBody PayChannelParamDTO payChannelParam){
+        Long merchantId = SecurityUtil.getMerchantId();
+        payChannelParam.setMerchantId(merchantId);
+        payChannelService.savePayChannelParam(payChannelParam);
+    }
 
     @ApiOperation("根据平台服务类型获取支付渠道列表")
     @ApiImplicitParams({

@@ -1,6 +1,7 @@
 package com.shanjupay.transaction.api;
 
 import com.shanjupay.transaction.api.dto.PayChannelDTO;
+import com.shanjupay.transaction.api.dto.PayChannelParamDTO;
 import com.shanjupay.transaction.api.dto.PlatformChannelDTO;
 
 import java.util.List;
@@ -10,6 +11,11 @@ import java.util.List;
  */
 public interface PayChannelService {
 
+    /**
+     * 保存支付渠道参数
+     * @param payChannelParam 商户原始支付渠道参数
+     */
+    void savePayChannelParam(PayChannelParamDTO payChannelParam);
     /**
      * 根据平台服务类型获取支付渠道列表
      * @param platformChannelCode
