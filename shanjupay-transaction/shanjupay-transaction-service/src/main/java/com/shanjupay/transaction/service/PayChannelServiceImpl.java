@@ -2,6 +2,7 @@ package com.shanjupay.transaction.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.shanjupay.transaction.api.PayChannelService;
+import com.shanjupay.transaction.api.dto.PayChannelDTO;
 import com.shanjupay.transaction.api.dto.PlatformChannelDTO;
 import com.shanjupay.transaction.convert.PlatformChannelConvert;
 import com.shanjupay.transaction.entity.AppPlatformChannel;
@@ -25,6 +26,11 @@ public class PayChannelServiceImpl implements PayChannelService {
 
     @Autowired
     private AppPlatformChannelMapper appPlatformChannelMapper;
+
+    @Override
+    public List<PayChannelDTO> queryPayChannelByPlatformChannel(String platformChannelCode) {
+        return platformChannelMapper.selectPayChannelByPlatformChannel(platformChannelCode);
+    }
 
     @Override
     public int queryAppBindPlatformChannel(String appId, String platformChannel) {

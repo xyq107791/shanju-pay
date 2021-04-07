@@ -1,5 +1,6 @@
 package com.shanjupay.transaction.api;
 
+import com.shanjupay.transaction.api.dto.PayChannelDTO;
 import com.shanjupay.transaction.api.dto.PlatformChannelDTO;
 
 import java.util.List;
@@ -9,6 +10,12 @@ import java.util.List;
  */
 public interface PayChannelService {
 
+    /**
+     * 根据平台服务类型获取支付渠道列表
+     * @param platformChannelCode
+     * @return
+     */
+    List<PayChannelDTO> queryPayChannelByPlatformChannel(String platformChannelCode);
     /**
      * 应用是否已经绑定了某个服务类型
      * @param appId
