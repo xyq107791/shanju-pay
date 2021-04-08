@@ -2,8 +2,15 @@ package com.shanjupay.merchant.api;
 
 import com.shanjupay.common.domain.BusinessException;
 import com.shanjupay.merchant.api.dto.MerchantDTO;
+import com.shanjupay.merchant.api.dto.StoreDTO;
 
 public interface MerchantService {
+    /**
+     * 商户下新增门店
+     * @param storeDTO
+     * @return
+     */
+    StoreDTO createStore(StoreDTO storeDTO);
 
     /**
      * 资质申请接口

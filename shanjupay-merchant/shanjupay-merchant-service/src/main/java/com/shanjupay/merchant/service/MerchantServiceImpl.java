@@ -1,12 +1,17 @@
 package com.shanjupay.merchant.service;
 
+import com.alibaba.fastjson.JSON;
 import com.shanjupay.common.domain.BusinessException;
 import com.shanjupay.common.domain.CommonErrorCode;
 import com.shanjupay.merchant.api.MerchantService;
 import com.shanjupay.merchant.api.dto.MerchantDTO;
+import com.shanjupay.merchant.api.dto.StoreDTO;
 import com.shanjupay.merchant.convert.MerchantCovert;
+import com.shanjupay.merchant.convert.StoreConvert;
 import com.shanjupay.merchant.entity.Merchant;
+import com.shanjupay.merchant.entity.Store;
 import com.shanjupay.merchant.mapper.MerchantMapper;
+import com.shanjupay.merchant.mapper.StoreMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +24,16 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Autowired
     MerchantMapper merchantMapper;
+    @Autowired
+    StoreMapper storeMapper;
+
+    @Override
+    public StoreDTO createStore(StoreDTO storeDTO) {
+        Store store = StoreConvert.INSTANCE.dto2entity(storeDTO);
+        log.info("商户下新增门店" + JSON.toJSONString(store));
+        storeMapper.insert(store);
+        return StoreConvert.INSTANCE.entity2dto(store);
+    }
 
     @Override
     @Transactional

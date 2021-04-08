@@ -11,7 +11,7 @@
  Target Server Version : 50728
  File Encoding         : 65001
 
- Date: 07/04/2021 09:40:52
+ Date: 08/04/2021 18:32:46
 */
 
 SET NAMES utf8mb4;
@@ -67,6 +67,12 @@ CREATE TABLE `pay_channel_param`  (
   PRIMARY KEY (`ID`) USING BTREE,
   UNIQUE INDEX `pay_channel_param_index1`(`PAY_CHANNEL`, `APP_PLATFORM_CHANNEL_ID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '某商户针对某一种原始支付渠道的配置参数' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of pay_channel_param
+-- ----------------------------
+INSERT INTO `pay_channel_param` VALUES (1380082561774899202, '应用1-闪聚c扫b-微信jsapi支付-支付参数', 1379330232364564482, 'WX_JSAPI', '{\"appID\":\"wxd2bf2dba2e86a8c7\",\"appSecret\": \"cec1a9185ad435abe1bced4b93f7ef2e\",\"key\": \"95fe355daca50f1ae82f0865c2ce87c8\",\"mchID\": \"1502570431\",\"payKey\": \"95fe355daca50f1ae82f0865c2ce87c8\"}', 1379374152557649922);
+INSERT INTO `pay_channel_param` VALUES (1380083595779887106, '应用1-闪聚c扫b-支付宝jsapi支付-支付参数', 1379330232364564482, 'ALIPAY_WAP', '{\"appId\":\"2016101000652290\",\"rsaPrivateKey\":\"MIIEvQIBADANBgkqhkiG9w0...\",\"alipayPublicKey\":\"MIIBIjANBgkqhkiG9w0BAQ...\",\"notifyUrl\":\"http://127.0.0.1:56010/payment‐receiver/alipay‐notify\",\"returnUrl\":\"http://127.0.0.1:56010/payment‐receiver/alipay‐return\",\"url\":\"https://openapi.alipaydev.com/gateway.do\",\"charest\":\"UTF‐8\",\"format\":\"json\",\"log_path\":\"/log\",\"signtype\":\"RSA2\"}', 1379374152557649922);
 
 -- ----------------------------
 -- Table structure for pay_order
