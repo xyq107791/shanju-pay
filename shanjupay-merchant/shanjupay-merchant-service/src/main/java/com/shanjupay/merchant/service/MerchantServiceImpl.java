@@ -216,4 +216,11 @@ public class MerchantServiceImpl implements MerchantService {
 
         return merchantDTO;
     }
+
+    @Override
+    public MerchantDTO queryMerchantByTenantId(Long tenantId) {
+        Merchant merchant = merchantMapper.selectOne(new LambdaQueryWrapper<Merchant>()
+                .eq(Merchant::getTenantId, tenantId));
+        return MerchantCovert.INSTANCE.entity2dto(merchant);
+    }
 }

@@ -43,4 +43,11 @@ public interface MerchantService {
      * 根据ID查询详细信息
      */
     MerchantDTO queryMerchantById(Long merchantId);
+
+    /**
+     * 查询租户下的商户
+     * @param tenantId
+     * @return
+     */
+    MerchantDTO queryMerchantByTenantId(Long tenantId);
 }
