@@ -40,7 +40,7 @@ public class MerchantServiceImpl implements MerchantService {
     StoreMapper storeMapper;
     @Autowired
     StoreStaffMapper storeStaffMapper;
-    @Autowired
+    @org.apache.dubbo.config.annotation.Reference
     TenantService tenantService;
     @Autowired
     StaffMapper staffMapper;
