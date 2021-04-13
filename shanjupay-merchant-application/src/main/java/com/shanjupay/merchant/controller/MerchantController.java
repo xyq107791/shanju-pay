@@ -41,6 +41,14 @@ public class MerchantController {
     @Autowired //注入本地的bean
             SmsService smsService;
 
+    @ApiOperation("获取登录用户的商户信息")
+    @GetMapping(value = "/my/merchants")
+    public MerchantDTO getMyMerchantInfo() {
+        Long merchantId = SecurityUtil.getMerchantId();
+        MerchantDTO merchant = merchantService.queryMerchantById(merchantId);
+        return merchant;
+    }
+
     @ApiOperation("资质申请")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "merchantInfo", value = "商户认证资料", required = true, dataType = "MerchantDetailVO", paramType = "body")

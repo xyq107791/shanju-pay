@@ -1,14 +1,25 @@
 package com.shanjupay.merchant.api;
 
 import com.shanjupay.common.domain.BusinessException;
+import com.shanjupay.common.domain.PageVO;
 import com.shanjupay.merchant.api.dto.MerchantDTO;
 import com.shanjupay.merchant.api.dto.StaffDTO;
 import com.shanjupay.merchant.api.dto.StoreDTO;
 
 public interface MerchantService {
+    /**
+     * 查询门店是否属于某商户
+     * @param storeId
+     * @param merchantId
+     * @return
+     */
+    Boolean queryStoreInMerchant(Long storeId, Long merchantId);
+
+    PageVO<StoreDTO> queryStoreByPage(StoreDTO storeDTO, Integer pageNo, Integer pageSize);
 
     /**
      * 商户新增员工
+     *
      * @param staffDTO
      * @return
      */
@@ -16,6 +27,7 @@ public interface MerchantService {
 
     /**
      * 为门店设置管理员
+     *
      * @param storeId
      * @param staffId
      */
@@ -23,6 +35,7 @@ public interface MerchantService {
 
     /**
      * 商户下新增门店
+     *
      * @param storeDTO
      * @return
      */
@@ -30,11 +43,12 @@ public interface MerchantService {
 
     /**
      * 资质申请接口
-     * @param merchantId 商户id
+     *
+     * @param merchantId  商户id
      * @param merchantDTO 资质申请的信息
      * @throws BusinessException
      */
-    void applyMerchant(Long merchantId,MerchantDTO merchantDTO);
+    void applyMerchant(Long merchantId, MerchantDTO merchantDTO);
 
     /*** 商户注册 * @return */
     MerchantDTO createMerchant(MerchantDTO merchantDTO);
@@ -46,6 +60,7 @@ public interface MerchantService {
 
     /**
      * 查询租户下的商户
+     *
      * @param tenantId
      * @return
      */

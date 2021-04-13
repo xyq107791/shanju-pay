@@ -16,8 +16,9 @@ public class ParseURLPairUtil {
             field.setAccessible(true);
             String name = field.getName();
             Object value = field.get(o);
-            if(value != null)
+            if(value != null) {
                 map.put(name, value);
+            }
         }
         Set<Map.Entry<String, Object>> set = map.entrySet();
         Iterator<Map.Entry<String, Object>> it = set.iterator();

@@ -11,6 +11,7 @@
 
     <modules>
         <module>shanjupay-common</module>
+        <module>test-rocketmq</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

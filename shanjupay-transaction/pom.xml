@@ -12,4 +12,8 @@
     <artifactId>shanjupay-transaction</artifactId>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>shanjupay-transaction-api</module>
+        <module>shanjupay-transaction-service</module>
+    </modules>
 </project>

@@ -38,6 +38,10 @@ spring:
             refresh: true
             data-id: spring-boot-redis.yml # redis配置
             group: COMMON_GROUP # 通用配置组
+          -
+            refresh: true
+            data-id: spring-boot-freemarker.yml
+            group: COMMON_GROUP
 
 dubbo:
   scan:

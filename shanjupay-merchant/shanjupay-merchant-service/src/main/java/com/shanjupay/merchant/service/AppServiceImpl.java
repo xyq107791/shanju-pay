@@ -38,6 +38,12 @@ public class AppServiceImpl implements AppService {
     private StaffMapper staffMapper;
 
     @Override
+    public Boolean queryAppInMerchant(String appId, Long merchantId) {
+        Integer count = appMapper.selectCount(new LambdaQueryWrapper<App>().eq(App::getAppId, appId).eq(App::getMerchantId, merchantId));
+        return count > 0;
+    }
+
+    @Override
     public StaffDTO createStaff(StaffDTO staffDTO) {
         //1.校验手机号格式及是否存在
         String mobile = staffDTO.getMobile();
@@ -67,6 +73,7 @@ public class AppServiceImpl implements AppService {
 
     /**
      * 根据账号判断员工是否已在指定商户存在
+     *
      * @param username
      * @param merchantId
      * @return
@@ -79,7 +86,8 @@ public class AppServiceImpl implements AppService {
 
     /**
      * 根据手机号判断员工是否已在指定商户存在
-     * @param mobile 手机号
+     *
+     * @param mobile     手机号
      * @param merchantId
      * @return
      */

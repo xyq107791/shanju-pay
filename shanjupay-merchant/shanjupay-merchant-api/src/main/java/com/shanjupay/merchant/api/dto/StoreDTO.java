@@ -1,5 +1,7 @@
 package com.shanjupay.merchant.api.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -8,6 +10,7 @@ import java.io.Serializable;
 
 @Data
 @ApiModel(value="StoreDTO", description="")
+@JsonSerialize(using= ToStringSerializer.class)
 public class StoreDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;

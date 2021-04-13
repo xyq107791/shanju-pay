@@ -2,8 +2,12 @@ package com.shanjupay.merchant.service;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shanjupay.common.domain.BusinessException;
 import com.shanjupay.common.domain.CommonErrorCode;
+import com.shanjupay.common.domain.PageVO;
 import com.shanjupay.common.util.PhoneUtil;
 import com.shanjupay.merchant.api.MerchantService;
 import com.shanjupay.merchant.api.dto.MerchantDTO;
@@ -25,12 +29,12 @@ import com.shanjupay.user.api.dto.tenant.CreateTenantRequestDTO;
 import com.shanjupay.user.api.dto.tenant.TenantDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.dubbo.config.annotation.Service;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+import java.util.List;
+
+@org.apache.dubbo.config.annotation.Service
 @Slf4j
 public class MerchantServiceImpl implements MerchantService {
 
@@ -44,6 +48,28 @@ public class MerchantServiceImpl implements MerchantService {
     TenantService tenantService;
     @Autowired
     StaffMapper staffMapper;
+
+    @Override
+    public Boolean queryStoreInMerchant(Long storeId, Long merchantId) {
+        Integer count = storeMapper.selectCount(new LambdaQueryWrapper<Store>().eq(Store::getId, storeId).eq(Store::getMerchantId, merchantId));
+        return count > 0;
+    }
+
+    @Override
+    public PageVO<StoreDTO> queryStoreByPage(StoreDTO storeDTO, Integer pageNo, Integer pageSize) {
+        // 创建分页
+        Page<Store> page = new Page<>(pageNo, pageSize);
+        // 构造查询条件
+        QueryWrapper<Store> qw = new QueryWrapper<>();
+        if (storeDTO != null && storeDTO.getMerchantId() != null) {
+            qw.lambda().eq(Store::getMerchantId, storeDTO.getMerchantId());
+        }
+        // 执行查询
+        IPage<Store> storeIPage = storeMapper.selectPage(page, qw);
+        // entity List转DTO List
+        List<StoreDTO> storeList = StoreConvert.INSTANCE.listentity2dto(storeIPage.getRecords());
+        return new PageVO<>(storeList, storeIPage.getTotal(), pageNo, pageSize);
+    }
 
     @Override
     public StaffDTO createStaff(StaffDTO staffDTO) {
@@ -210,10 +236,7 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public MerchantDTO queryMerchantById(Long merchantId) {
         Merchant merchant = merchantMapper.selectById(merchantId);
-        MerchantDTO merchantDTO = new MerchantDTO();
-
-        BeanUtils.copyProperties(merchant, merchantDTO);
-
+        MerchantDTO merchantDTO = MerchantCovert.INSTANCE.entity2dto(merchant);
         return merchantDTO;
     }
 

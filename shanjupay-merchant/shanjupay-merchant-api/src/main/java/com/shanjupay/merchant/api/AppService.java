@@ -8,6 +8,13 @@ import java.util.List;
 public interface AppService {
 
     /**
+     * 查询应用是否属于某个商户
+     * @param appId
+     * @param merchantId
+     * @return
+     * */
+    Boolean queryAppInMerchant(String appId, Long merchantId);
+    /**
      * 商户新增员工
      * @param staffDTO
      */
