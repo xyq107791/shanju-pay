@@ -10,18 +10,28 @@ import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AlipayTradeWapPayResponse;
+import com.github.wxpay.sdk.WXPay;
+import com.github.wxpay.sdk.WXPayConstants;
+import com.github.wxpay.sdk.WXPayUtil;
 import com.shanjupay.common.domain.BusinessException;
 import com.shanjupay.common.domain.CommonErrorCode;
 import com.shanjupay.paymentagent.api.PayChannelAgentService;
 import com.shanjupay.paymentagent.api.conf.AliConfigParam;
+import com.shanjupay.paymentagent.api.conf.WXConfigParam;
 import com.shanjupay.paymentagent.api.dto.AlipayBean;
 import com.shanjupay.paymentagent.api.dto.PaymentResponseDTO;
 import com.shanjupay.paymentagent.api.dto.TradeStatus;
+import com.shanjupay.paymentagent.api.dto.WeChatBean;
 import com.shanjupay.paymentagent.common.constant.AliCodeConstants;
+import com.shanjupay.paymentagent.config.WXSDKConfig;
 import com.shanjupay.paymentagent.message.PayProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Administrator
@@ -33,6 +43,97 @@ public class PayChannelAgentServiceImpl implements PayChannelAgentService {
 
     @Autowired
     PayProducer payProducer;
+
+    @Override
+    public PaymentResponseDTO queryPayOrderByWeChat(WXConfigParam wxConfigParam, String outTradeNo) {
+        WXSDKConfig config = new WXSDKConfig(wxConfigParam);
+        Map<String, String> resp = null;
+
+        try {
+            WXPay wxPay = new WXPay(config);
+            Map<String, String> data = new HashMap<>();
+            data.put("out_trade_no", outTradeNo);
+            resp = wxPay.orderQuery(data);
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+            return PaymentResponseDTO.fail("调用微信查询订单异常", outTradeNo, TradeStatus.UNKNOWN);
+        }
+        String returnCode = resp.get("return_code");
+        String resultCode = resp.get("result_code");
+        String tradeState = resp.get("trade_state");
+        String transactionId = resp.get("transaction_id");
+        String returnMsg = resp.get("return_msg");
+
+        if("SUCCESS".equals(returnCode) && "SUCCESS".equals(resultCode)) {
+            if ("SUCCESS".equals(tradeState)) { //交易成功
+                return PaymentResponseDTO.success(transactionId, outTradeNo, TradeStatus.SUCCESS, "");
+            } else if ("USERPAYING".equals(tradeState)) { //等待用户支付
+                return PaymentResponseDTO.success(transactionId, outTradeNo, TradeStatus.USERPAYING, "");
+            } else if("PAYERROR".equals(tradeState)) {
+                return PaymentResponseDTO.success(transactionId, outTradeNo, TradeStatus.FAILED, returnMsg);
+            } else if ("CLOSED".equals(tradeState)) {
+                return PaymentResponseDTO.success(transactionId, outTradeNo, TradeStatus.REVOKED, returnMsg);
+            }
+        }
+
+        return PaymentResponseDTO.success("暂不支持其他状态", transactionId, outTradeNo, TradeStatus.UNKNOWN);
+    }
+
+    /**
+     * 微信jsapi下单接口请求
+     * @param wxConfigParam
+     * @param weChatBean
+     * @return
+     */
+    @Override
+    public Map<String, String> createPayOrderByWeChatJSAPI(WXConfigParam wxConfigParam, WeChatBean weChatBean) {
+        WXSDKConfig config = new WXSDKConfig(wxConfigParam); //通过实际支付参数匹配
+
+        try {
+            WXPay wxPay = new WXPay(config);
+
+            //按照微信统一下单接口要求构造请求参数
+            HashMap<String, String> requestParam = new HashMap<>();
+            requestParam.put("body", weChatBean.getBody());
+            requestParam.put("out_trade_no", weChatBean.getOutTradeNo());
+            requestParam.put("fee_type", "CNY");
+            requestParam.put("total_fee", String.valueOf(weChatBean.getTotalFee()));
+            requestParam.put("spbill_create_ip", weChatBean.getSpbillCreateIp());
+            requestParam.put("notify_url", weChatBean.getNotifyUrl());
+            requestParam.put("trade_type", "JSAPI");
+            requestParam.put("openId", weChatBean.getOpenId());
+
+            //调用微信统一下单API
+            Map<String, String> resp = wxPay.unifiedOrder(requestParam);
+
+            //=====向mq写入订单查询的消息======
+            PaymentResponseDTO<WXConfigParam> notice = new PaymentResponseDTO<>();
+            //订单号
+            notice.setOutTradeNo(weChatBean.getOutTradeNo());
+            //支付渠道参数
+            notice.setContent(wxConfigParam);
+            //msg
+            notice.setMsg("WX_JSAPI");
+            payProducer.payOrderNotice(notice);
+
+
+            //返回h5网页需要的数据
+            String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
+            String key = wxConfigParam.getKey();
+            Map<String, String> jsapiPayParam = new HashMap<>();
+            jsapiPayParam.put("appId", resp.get("appId"));
+            jsapiPayParam.put("package", "prepay_id=" + resp.get("prepay_id"));
+            jsapiPayParam.put("timeStamp", timestamp);
+            jsapiPayParam.put("noceStr", UUID.randomUUID().toString());
+            jsapiPayParam.put("signType", "HMAC-SHA256");
+            jsapiPayParam.put("paySign", WXPayUtil.generateSignature(jsapiPayParam, key, WXPayConstants.SignType.HMACSHA256));
+            log.info("微信JSAPI支付响应内容:"+ jsapiPayParam);
+            return jsapiPayParam;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new BusinessException(CommonErrorCode.E_400001);
+        }
+    }
 
     /**
      * 支付宝交易状态查询

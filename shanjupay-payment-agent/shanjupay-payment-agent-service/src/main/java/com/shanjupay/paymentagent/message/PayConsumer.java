@@ -3,6 +3,7 @@ package com.shanjupay.paymentagent.message;
 import com.alibaba.fastjson.JSON;
 import com.shanjupay.paymentagent.api.PayChannelAgentService;
 import com.shanjupay.paymentagent.api.conf.AliConfigParam;
+import com.shanjupay.paymentagent.api.conf.WXConfigParam;
 import com.shanjupay.paymentagent.api.dto.PaymentResponseDTO;
 import com.shanjupay.paymentagent.api.dto.TradeStatus;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,8 @@ public class PayConsumer implements RocketMQListener<MessageExt> {
             result = payAgentService.queryPayOrderByAli(aliConfigParam, outTradeNo);
         } else if ("WX_JSAPI".equals(msg)) {
             //查询微信支付结果
+            WXConfigParam wxConfigParam = JSON.parseObject(param, WXConfigParam.class);
+            result = payAgentService.queryPayOrderByWeChat(wxConfigParam, outTradeNo);
         }
 
         //返回查询获得的支付状态
