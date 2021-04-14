@@ -12,6 +12,15 @@
     <artifactId>shanjupay-transaction-service</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
         <!-- okhttp3 -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
